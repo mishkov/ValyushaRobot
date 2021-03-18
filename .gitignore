@@ -1,0 +1,21 @@
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# Conventional directory for build outputs
+build/
+
+# Directory created by dartdoc
+doc/api/
+
+# Bot token! Top secret!
+bot_token.txt
+
+# Personal data of users
+chats_data.json
+
+# Logs of bot working
+output.log
+
+# Files with timetable
+timetables/
