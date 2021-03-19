@@ -39,7 +39,7 @@ void main() async {
     io.exit(0);
   });
 
-  await downloadTimetable('timetables/new_timetable.pdf', outputLog);
+  await downloadTimetable('timetables/timetable.pdf', outputLog);
   await convertPdfToPngs(outputLog);
 
   teledart.onMessage(keyword: 'start', entityType: 'bot_command').listen(
