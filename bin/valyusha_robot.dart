@@ -29,9 +29,8 @@ void main() async {
   var timer = Timer.periodic(
       timeout, (_) => checkTimetable(telegram, outputLog, chatsMeneger));
 
-  await teledart
-      .start()
-      .then((me) async => await outputLog.log('${me.username} is initialised'));
+  var bot = await teledart.start();
+  await outputLog.log('${bot.username} is initialised');
 
   io.ProcessSignal.sigint.watch().listen((signal) async {
     teledart.stop();
@@ -39,6 +38,9 @@ void main() async {
     await outputLog.log('Bot was stopped by user');
     io.exit(0);
   });
+
+  await downloadTimetable('timetables/new_timetable.pdf', outputLog);
+  await convertPdfToPngs(outputLog);
 
   teledart.onMessage(keyword: 'start', entityType: 'bot_command').listen(
       (message) => onSubscribeCommand(message, outputLog, chatsMeneger));
