@@ -53,6 +53,9 @@ Future<bool> downloadTimetable(String fileNameToSave, Logger outputLog) async {
   final successStatus = 200;
   if (response.statusCode == successStatus) {
     var fileToSave = File(fileNameToSave);
+    if (!fileToSave.existsSync()) {
+      fileToSave = await File(fileNameToSave).create(recursive: true);
+    }
     await fileToSave.writeAsBytes(response.bodyBytes.toList());
     return true;
   }
