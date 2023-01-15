@@ -13,3 +13,4 @@ dependencies:
   http: ^0.13.5
   html: ^0.15.1
   crypto: ^3.0.0
+  dotenv: ^4.0.1

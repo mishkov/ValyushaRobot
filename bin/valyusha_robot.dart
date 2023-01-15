@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:dotenv/dotenv.dart';
 import 'package:teledart/teledart.dart';
 import 'package:teledart/telegram.dart';
 import 'package:valyusha_robot/services/timetable_tools.dart';
@@ -29,8 +30,9 @@ void main() async {
     return;
   }
 
-  var botTokenContainer = io.File('bot_token.txt');
-  var botToken = await botTokenContainer.readAsString();
+  var env = DotEnv()..load();
+
+  final botToken = env['BOT_TOKEN'] ?? 'error';
   var telegram = Telegram(botToken);
   final botUsername = (await telegram.getMe()).username;
   var teledart = TeleDart(botToken, Event(botUsername));
