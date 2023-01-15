@@ -7,6 +7,7 @@
 4. /subscribe - подписаться на рассылку расписания.
 5. /unsubscribe - отписаться от рассылки расписания.
 
-Контакты разработчика: mischkowu@gmail.com, @HiKiTa_DeVeLoPer.
+Контакты разработчика: mishkov.dd@gmail.com, @mishkovdd.
+
 Created from templates made available by Stagehand under a BSD-style
 [license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
