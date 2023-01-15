@@ -14,6 +14,10 @@ class ChatsMeneger {
     }
 
     var chatsDataFile = File(_dataFile);
+    if (!chatsDataFile.existsSync()) {
+      chatsDataFile.createSync(recursive: true);
+    }
+    
     _chatsData = jsonDecode(chatsDataFile.readAsStringSync());
 
     if (_chatsData is! List) {
