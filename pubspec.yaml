@@ -6,13 +6,10 @@ description: A bot for auto sending timetable of MRC.
 environment:
   sdk: '>=2.10.0 <3.0.0'
 
-#dependencies:
-#  path: ^1.7.0
-
-dev_dependencies:
+dependencies:
   pedantic: ^1.9.0
   test: ^1.14.4
-  teledart: ^0.1.4
-  http: ^0.12.2
-  html: ^0.14.0+4
+  teledart: ^0.3.4
+  http: ^0.13.5
+  html: ^0.15.1
   crypto: ^3.0.0

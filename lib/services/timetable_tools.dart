@@ -7,13 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:crypto/crypto.dart';
 
-import 'logger.dart';
-
 Future<String> getTimetableFileUrl(Logger outputLog) async {
   var baseUrl = 'https://www.mrk-bsuir.by/ru';
   var response;
   try {
-    response = await http.get(baseUrl);
+    response = await http.get(Uri.parse(baseUrl));
   } catch (e) {
     await outputLog.log('When running GET request $e',
         status: RecordStatus.error);
@@ -44,7 +42,7 @@ Future<bool> downloadTimetable(String fileNameToSave, Logger outputLog) async {
 
   var response;
   try {
-    response = await http.get(timetableUrl);
+    response = await http.get(Uri.parse(timetableUrl));
   } catch (e) {
     await outputLog.log('Error of running GET request $e',
         status: RecordStatus.error);
