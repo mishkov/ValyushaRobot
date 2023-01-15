@@ -9,8 +9,17 @@ import 'package:valyusha_robot/services/logger.dart';
 
 import 'command_handler.dart';
 
+class _HttpOverridesWithProxy extends io.HttpOverrides {
+  @override
+  String findProxyFromEnvironment(Uri url, Map<String, String> environment) {
+    return 'PROXY 185.199.229.156:7492';
+  }
+}
+
 void main() async {
+  io.HttpOverrides.global = _HttpOverridesWithProxy();
   var outputLog = Logger('output.log');
+  await outputLog.log('PID of started process: ${io.pid}');
   ChatsMeneger chatsMeneger;
   try {
     chatsMeneger = ChatsMeneger('chats_data.json');
@@ -23,14 +32,15 @@ void main() async {
   var botTokenContainer = io.File('bot_token.txt');
   var botToken = await botTokenContainer.readAsString();
   var telegram = Telegram(botToken);
-  var teledart = TeleDart(telegram, Event());
+  final botUsername = (await telegram.getMe()).username;
+  var teledart = TeleDart(botToken, Event(botUsername));
 
   var timeout = Duration(minutes: 5);
   var timer = Timer.periodic(
       timeout, (_) => checkTimetable(telegram, outputLog, chatsMeneger));
 
-  var bot = await teledart.start();
-  await outputLog.log('${bot.username} is initialised');
+  teledart.start();
+  await outputLog.log('$botUsername is initialised');
 
   io.ProcessSignal.sigint.watch().listen((signal) async {
     teledart.stop();
@@ -40,7 +50,7 @@ void main() async {
   });
 
   await downloadTimetable('timetables/timetable.pdf', outputLog);
-  await convertPdfToPngs(outputLog);
+  convertPdfToPngs(outputLog);
 
   teledart.onMessage(keyword: 'start', entityType: 'bot_command').listen(
       (message) => onSubscribeCommand(message, outputLog, chatsMeneger));
@@ -74,7 +84,7 @@ void checkTimetable(
       'timetables/timetable.pdf', 'timetables/new_timetable.pdf', outputLog);
   if (!isEqual) {
     await downloadTimetable('timetables/timetable.pdf', outputLog);
-    await convertPdfToPngs(outputLog);
+    convertPdfToPngs(outputLog);
     await chatsMeneger.forEachAsync((chat) async {
       var isSubscribed = chatsMeneger.getSubscribedStatus(chat['chat_id']);
       if (isSubscribed is bool && isSubscribed) {
