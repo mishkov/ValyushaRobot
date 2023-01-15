@@ -8,9 +8,6 @@ build/
 # Directory created by dartdoc
 doc/api/
 
-# Bot token! Top secret!
-bot_token.txt
-
 # Personal data of users
 chats_data.json
 
@@ -19,3 +16,6 @@ output.log
 
 # Files with timetable
 timetables/
+
+# Bot token
+.env

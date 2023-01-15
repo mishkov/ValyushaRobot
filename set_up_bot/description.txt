@@ -7,4 +7,4 @@
 4. /subscribe - подписаться на рассылку расписания.
 5. /unsubscribe - отписаться от рассылки расписания.
 
-Контакты разработчика: mischkowu@gmail.com, @HiKiTa_DeVeLoPer.
+Контакты разработчика: mishkov.dd@gmail.com, @mishkovdd.
