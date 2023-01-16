@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:teledart/telegram.dart';
+import 'package:valyusha_robot/repeat_until_success.dart';
 import 'package:valyusha_robot/services/logger.dart';
 import 'package:valyusha_robot/services/chats_meneger.dart';
 import 'package:http/http.dart' as http;
@@ -35,19 +36,22 @@ Future<String> getTimetableFileUrl(Logger outputLog) async {
 }
 
 Future<bool> downloadTimetable(String fileNameToSave, Logger outputLog) async {
-  final timetableUrl = await getTimetableFileUrl(outputLog);
+  final timetableUrl = await repeatUntilSuccess(() async {
+    return getTimetableFileUrl(outputLog);
+  });
   if (timetableUrl.isEmpty) {
     return false;
   }
 
-  var response;
-  try {
-    response = await http.get(Uri.parse(timetableUrl));
-  } catch (e) {
-    await outputLog.log('Error of running GET request $e',
-        status: RecordStatus.error);
-    return false;
-  }
+  var response = await repeatUntilSuccess(() async {
+    return await http.get(Uri.parse(timetableUrl));
+  }, onCatch: (e) async {
+    await outputLog.log(
+      'Error of running GET request $e',
+      status: RecordStatus.error,
+    );
+  });
+
   final successStatus = 200;
   if (response.statusCode == successStatus) {
     var fileToSave = File(fileNameToSave);
@@ -108,19 +112,26 @@ Future<void> sendTimeTable(int chatId, Telegram telegram, Logger outputLog,
   }
 
   var lastTimetableId = chatsMeneger.getLastTimeTableId(chatId);
-  try {
-    await telegram.deleteMessage(chatId, lastTimetableId);
-  } catch (e) {
-    await outputLog.log('When deleting message $e', status: RecordStatus.error);
-  }
+  await repeatUntilSuccess<bool>(
+    () async {
+      return await telegram.deleteMessage(chatId, lastTimetableId);
+    },
+    onCatch: (e) async {
+      await outputLog.log(
+        'When deleting message $e',
+        status: RecordStatus.error,
+      );
+    },
+  );
 
-  var photoMessage;
-  try {
-    photoMessage = await telegram.sendPhoto(chatId, timetableImage);
-  } catch (e) {
-    await outputLog.log('When sending message', status: RecordStatus.error);
-    return;
-  }
+  var photoMessage = await repeatUntilSuccess(
+    () async {
+      return await telegram.sendPhoto(chatId, timetableImage);
+    },
+    onCatch: (e) async {
+      await outputLog.log('When sending message', status: RecordStatus.error);
+    },
+  );
 
   chatsMeneger.editLastTimetableId(chatId, photoMessage.message_id);
 }

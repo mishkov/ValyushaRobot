@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:dotenv/dotenv.dart';
 import 'package:teledart/teledart.dart';
 import 'package:teledart/telegram.dart';
+import 'package:valyusha_robot/repeat_until_success.dart';
 import 'package:valyusha_robot/services/timetable_tools.dart';
 import 'package:valyusha_robot/services/chats_meneger.dart';
 import 'package:valyusha_robot/services/logger.dart';
@@ -34,12 +35,25 @@ void main() async {
 
   final botToken = env['BOT_TOKEN'] ?? 'error';
   var telegram = Telegram(botToken);
-  final botUsername = (await telegram.getMe()).username;
+  final botUsername = (await repeatUntilSuccess(
+    () async {
+      return telegram.getMe();
+    },
+    onCatch: (e) async {
+      await outputLog.log(
+        'Cannot get bot username',
+        status: RecordStatus.error,
+      );
+    },
+  ))
+      .username;
   var teledart = TeleDart(botToken, Event(botUsername));
 
   var timeout = Duration(minutes: 5);
   var timer = Timer.periodic(
-      timeout, (_) => checkTimetable(telegram, outputLog, chatsMeneger));
+    timeout,
+    (_) => checkTimetable(telegram, outputLog, chatsMeneger),
+  );
 
   teledart.start();
   await outputLog.log('$botUsername is initialised');
@@ -76,10 +90,10 @@ void main() async {
       (message) =>
           onTimetableCommand(message, telegram, outputLog, chatsMeneger));
 
-  checkTimetable(telegram, outputLog, chatsMeneger);
+  await checkTimetable(telegram, outputLog, chatsMeneger);
 }
 
-void checkTimetable(
+Future<void> checkTimetable(
     Telegram telegram, Logger outputLog, ChatsMeneger chatsMeneger) async {
   await downloadTimetable('timetables/new_timetable.pdf', outputLog);
   var isEqual = await compareTimetables(
