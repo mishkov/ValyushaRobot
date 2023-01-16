@@ -62,7 +62,7 @@ Future<bool> downloadTimetable(String fileNameToSave, Logger outputLog) async {
 }
 
 void convertPdfToPngs(Logger outputLog) async {
-  var result = await Process.run('./pdftoppm', [
+  var result = await Process.run('pdftoppm', [
     'timetables/timetable.pdf',
     'timetables/timetable',
     '-png',
