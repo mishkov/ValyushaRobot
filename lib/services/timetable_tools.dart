@@ -112,17 +112,11 @@ Future<void> sendTimeTable(int chatId, Telegram telegram, Logger outputLog,
   }
 
   var lastTimetableId = chatsMeneger.getLastTimeTableId(chatId);
-  await repeatUntilSuccess<bool>(
-    () async {
-      return await telegram.deleteMessage(chatId, lastTimetableId);
-    },
-    onCatch: (e) async {
-      await outputLog.log(
-        'When deleting message $e',
-        status: RecordStatus.error,
-      );
-    },
-  );
+  try {
+    await telegram.deleteMessage(chatId, lastTimetableId);
+  } catch (e) {
+    await outputLog.log('When deleting message $e', status: RecordStatus.error);
+  }
 
   var photoMessage = await repeatUntilSuccess(
     () async {
